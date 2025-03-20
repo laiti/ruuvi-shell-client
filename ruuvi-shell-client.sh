@@ -17,9 +17,20 @@ RESET="$(tput sgr0)"
 source settings
 
 # Do initial request.
-DATA=$(curl -s "$API_URL")
+DATA=""
 
 while true; do
+	# Get a new payload into a separate variable.
+	NEW_DATA=$(curl -s "$API_URL")
+	
+	# Check if curl command exit code is 0, reply was non-empty and the data has changed compared to old data.
+	if [ $? -eq 0 ] && [ -n "$NEW_DATA" ] && [ "$DATA" != "$NEW_DATA" ]; then
+		DATA=$NEW_DATA
+	else
+		sleep $INTERVAL
+		continue
+	fi
+	
 	# Clear the screen.
 	clear
 	
@@ -74,13 +85,4 @@ while true; do
 	
 	# Sleep.
 	sleep $INTERVAL
-	
-	# Get a new payload into a separate variable.
-	NEW_DATA=$(curl -s "$API_URL")
-	
-	# Check if curl command exit code is 0 and reply non-empty.
-	if [ $? -eq 0 ] && [ -n $NEW_DATA ]; then
-		# Update original variable so that we don't overwrite it with empty, thus keeping the original data until new one comes in.
-		DATA=$NEW_DATA
-	fi
 done
