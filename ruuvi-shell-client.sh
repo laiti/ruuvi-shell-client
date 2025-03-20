@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+# Check if jq is installed.
+if ! which jq &> /dev/null; then
+	echo "jq is not installed. Exiting..."
+	exit 1
+fi
+
 # Color output commands.
 GREEN="$(tput bold)$(tput setaf 2)"
 DIM="$(tput setaf 7)"
