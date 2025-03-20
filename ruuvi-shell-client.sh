@@ -23,12 +23,9 @@ while true; do
 	# Get a new payload into a separate variable.
 	NEW_DATA=$(curl -s "$API_URL")
 	
-	# Check if curl command exit code is 0, reply was non-empty and the data has changed compared to old data.
+	# Check if curl command exit code is 0, reply was non-empty and the data has changed compared to old data. If something isn't right, use the old data for rendering.
 	if [ $? -eq 0 ] && [ -n "$NEW_DATA" ] && [ "$DATA" != "$NEW_DATA" ]; then
 		DATA=$NEW_DATA
-	else
-		sleep $INTERVAL
-		continue
 	fi
 	
 	# Clear the screen.
