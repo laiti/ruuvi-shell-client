@@ -25,8 +25,9 @@ while true; do
 	CURL_EXIT_CODE=$?
 	NETWORK_ERROR=0 # Reset network error flag.
 	
-	# Check if curl command exit code is 0, reply was non-empty and the data has changed compared to old data. If something isn't right, use the old data for rendering.
+	# Check if curl command exit code is 0. If not, there's an network error.
 	if [ "$CURL_EXIT_CODE" -eq 0 ]; then
+		# The reply needs to be non-empty and the data has changed compared to old data. If something isn't right, the old data is used.
 		if [ -n "$NEW_DATA" ] && [ "$DATA" != "$NEW_DATA" ]; then
 			DATA=$NEW_DATA
 		fi
@@ -70,7 +71,7 @@ while true; do
 		# --- Displaying ---
 		
 		# Handle low battery warning.
-		if [[ $BATTERY_LOW = "true" ]]; then
+		if [ "$BATTERY_LOW" == 1 ]; then
 			NAME="${NAME} ${RESET}${RED}Battery low${RESET}"
 		fi
 		
