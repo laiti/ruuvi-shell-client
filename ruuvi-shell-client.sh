@@ -22,10 +22,16 @@ DATA=""
 while true; do
 	# Get a new payload into a separate variable.
 	NEW_DATA=$(curl -s "$API_URL")
+	CURL_EXIT_CODE=$?
+	NETWORK_ERROR=0 # Reset network error flag.
 	
 	# Check if curl command exit code is 0, reply was non-empty and the data has changed compared to old data. If something isn't right, use the old data for rendering.
-	if [ $? -eq 0 ] && [ -n "$NEW_DATA" ] && [ "$DATA" != "$NEW_DATA" ]; then
-		DATA=$NEW_DATA
+	if [ "$CURL_EXIT_CODE" -eq 0 ]; then
+		if [ -n "$NEW_DATA" ] && [ "$DATA" != "$NEW_DATA" ]; then
+			DATA=$NEW_DATA
+		fi
+	else
+		NETWORK_ERROR=1
 	fi
 	
 	# Clear the screen.
@@ -79,6 +85,11 @@ while true; do
 		echo -e "${DIM}Updated: ${UPDATED}${RESET}"
 		echo ""
 	done
+	
+	# If there was a network error while getting new data, print a warning.
+	if [ "$NETWORK_ERROR" == 1 ]; then
+		echo -e "${RED}Network error${RESET}"
+	fi
 	
 	# Sleep.
 	sleep $INTERVAL
