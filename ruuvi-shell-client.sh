@@ -21,7 +21,7 @@ DATA=""
 
 while true; do
 	# Get a new payload into a separate variable.
-	NEW_DATA=$(curl -s "$API_URL")
+	NEW_DATA=$(curl --silent --fail "$API_URL")
 	CURL_EXIT_CODE=$?
 	NETWORK_ERROR=0 # Reset network error flag.
 	
