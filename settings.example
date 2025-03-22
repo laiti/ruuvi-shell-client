@@ -1,2 +1,9 @@
 API_URL="" # API URL
 INTERVAL=300 # Refresh time
+FORMATTER="./formatters/ruuvi-gateway-history-api.formatter.sh" # Formatter file to use.
+
+# Possible tag name mapping
+declare -A TAG_NAMES=(
+	["XX:XX:XX:XX:XX:XX"]="Bedroom"
+	["YY:YY:YY:YY:YY:YY"]="Outside"
+)

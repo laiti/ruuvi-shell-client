@@ -13,10 +13,18 @@ WHITE="$(tput bold)$(tput setaf 7)"
 RED="$(tput bold)$(tput setaf 1)"
 RESET="$(tput sgr0)"
 
-# Load settings file
+# Load settings file.
 source settings
 
-# Do initial request.
+# Check if the specified formatter file exists.
+if [[ -n "$FORMATTER" && -f "$FORMATTER" ]]; then
+    source "$FORMATTER"
+else
+    echo "Error: Formatter file '$FORMATTER' not found!"
+    exit 1
+fi
+
+# Define data variable outside of the main loop.
 DATA=""
 
 while true; do
@@ -39,12 +47,17 @@ while true; do
 	clear
 	
 	# Parse the JSON data an extract variables.
-	echo "$DATA" | jq -c '.[]' | while read -r SENSOR; do
+	echo "$DATA" | eval "parse_json" | while read -r SENSOR; do
+		ID=$(echo "$SENSOR" | jq -r '.id')
 		NAME=$(echo "$SENSOR" | jq -r '.tag_name')
 		TEMPERATURE=$(echo "$SENSOR" | jq -r '.temperature')
 		HUMIDITY=$(echo "$SENSOR" | jq -r '.humidity')
 		DATETIME=$(echo "$SENSOR" | jq -r '.datetime')
-		BATTERY_LOW=$(echo "$SENSOR" | jq -r '.battery_low') # For future.
+		VOLTAGE=$(echo "$SENSOR" | jq -r '.voltage')
+		BATTERY_LOW=$(echo "$SENSOR" | jq -r '.battery_low')
+		
+		# If we have an ID, let's try to look up a name from settings.
+		NAME="${TAG_NAMES[$ID]:-$NAME}"
 		
 		# Round values to 2 decimals
 		TEMPERATURE=$(printf "%.2f" $TEMPERATURE)
@@ -70,8 +83,10 @@ while true; do
 		
 		# --- Displaying ---
 		
-		# Handle low battery warning.
-		if [ "$BATTERY_LOW" == 1 ]; then
+		# Handle low battery warning. Try BATTERY_LOW first, then VOLTAGE.
+		if { [ "$BATTERY" != null ] && [ "$BATTERY_LOW" = true ]; } ||
+			{ [ "$VOLTAGE" != null ] && [ "$(echo "$VOLTAGE < 2.5" | bc -l)" -eq 1 ]; }; then
+
 			NAME="${NAME} ${RESET}${RED}Battery low${RESET}"
 		fi
 		
