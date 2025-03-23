@@ -5,8 +5,6 @@ services:
     build: .
     container_name: ruuvi-shell
     restart: always
-    devices:
-      - "/dev/ttyACM0:/dev/ttyACM0"
     environment:
       - TZ=Europe/Helsinki
     networks:
