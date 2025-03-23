@@ -13,8 +13,8 @@ WHITE="$(tput bold)$(tput setaf 7)"
 RED="$(tput bold)$(tput setaf 1)"
 RESET="$(tput sgr0)"
 
-# Load settings file.
-source settings
+# Load settings file if it exists.
+[[ -f settings ]] && source settings
 
 # Check if the specified formatter file exists.
 if [[ -n "$FORMATTER" && -f "$FORMATTER" ]]; then
