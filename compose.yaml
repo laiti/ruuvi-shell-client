@@ -1,0 +1,29 @@
+version: 3.7
+
+services:
+  ruuvi-shell:
+    build: .
+    container_name: ruuvi-shell
+    restart: always
+    devices:
+      - "/dev/ttyACM0:/dev/ttyACM0"
+    environment:
+      - TZ=Europe/Helsinki
+    networks:
+      - mysql
+  mysql:
+      image: mysql-9.2
+      restart: always
+      expose:
+        - 3306
+      ports:
+        - "127.0.0.1:3306:3306" # For connections from host
+      environment:
+        MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+        MYSQL_DATABASE: ruuvi
+        MYSQL_USER: ruuvi
+        MYSQL_PASSWORD: ruuvi
+      networks:
+        - mysql
+networks:
+  mysql:
