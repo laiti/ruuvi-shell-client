@@ -6,6 +6,9 @@ if ! which jq &> /dev/null; then
 	exit 1
 fi
 
+# Decimal separator must be a dot.
+LC_NUMERIC=C
+
 # Color output commands.
 GREEN="$(tput bold)$(tput setaf 2)"
 DIM="$(tput setaf 7)"
